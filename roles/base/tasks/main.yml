@@ -1,0 +1,13 @@
+
+- name: install git
+  become: true
+  yum: name=git state=latest
+
+- name: create www directory
+  become: true
+  file:
+    path: /var/www
+    state: directory
+    mode: 0755
+    owner: "{{ user_name }}"
+    group: "{{ user_name }}"

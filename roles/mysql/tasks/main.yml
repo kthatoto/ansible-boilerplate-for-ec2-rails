@@ -1,0 +1,45 @@
+- name: install mysql
+  yum: name={{ item }} state=present
+  become: yes
+  with_items:
+    - mysql
+    - mysql-server
+    - mysql-devel
+    - MySQL-python
+
+- name: setting utf-8
+  become: yes
+  lineinfile:
+    dest=/etc/my.cnf
+    insertafter="^\[mysqld\]"
+    line="character-set-server=utf8"
+
+- name: service mysqld start
+  become: yes
+  service:
+    name=mysqld
+    state=started
+    enabled=yes
+
+- name: isntall mysql-python by pip
+  become: yes
+  pip: name=MySQL-python
+
+# rdsインスタンス作成時にuser作成される
+#- name: create user to db
+#  mysql_user:
+#    name: "{{ mysql_db_user }}"
+#    login_user: "{{ mysql_db_user }}"
+#    login_host: "{{ mysql_db_host }}"
+#    login_password: "{{ mysql_db_password }}"
+#    priv: '*.*:ALL'
+#    state: present
+
+- name: create db
+  mysql_db:
+    login_host: "{{ mysql_db_host }}"
+    login_user: "{{ mysql_db_user }}"
+    login_password: "{{ mysql_db_password }}"
+    name: "{{ mysql_db_name }}"
+    state: present
+    encoding: utf8

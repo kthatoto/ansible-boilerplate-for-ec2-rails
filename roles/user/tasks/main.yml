@@ -1,0 +1,51 @@
+
+- name: add user
+  become: true
+  user:
+    name={{ user_name }}
+    state=present
+    password={{ user_password }}
+
+- name: add directory ~/.ssh
+  become: true
+  file:
+    path="/home/{{ user_name }}/.ssh"
+    state=directory
+    owner={{ user_name }}
+    group={{ user_name }}
+    mode=0700
+
+- name: deploy authorized_keys
+  become: true
+  copy:
+    src="authorized_keys"
+    dest="/home/{{ user_name }}/.ssh/authorized_keys"
+    owner={{ user_name }}
+    group={{ user_name }}
+    mode=0600
+
+- name: add super privilege to user
+  become: true
+  copy:
+    src="sudoers"
+    dest="/etc/sudoers"
+    owner=root
+    group=root
+    mode=0440
+
+- name: ban root ssh login
+  become: yes
+  lineinfile:
+    dest=/etc/ssh/sshd_config
+    regexp='^PermitRootLogin'
+    line='PermitRootLogin no'
+  notify: restart sshd
+- name: ban ec2-user ssh login
+  become: yes
+  lineinfile:
+    dest=/etc/ssh/sshd_config
+    state=present
+    insertafter='EOF'
+    line='DenyUsers ec2-user'
+  notify: restart sshd
+

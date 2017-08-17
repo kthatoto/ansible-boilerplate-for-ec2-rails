@@ -1,0 +1,17 @@
+# created user password
+ansible_sudo_pass: ******
+
+# vars for [user] role
+user_name: ******
+user_password: *************************
+
+# vars for [ruby] role
+ruby_version: 2.4.*
+ruby_bundler_version: 1.15.*
+
+# vars for [mysql] role
+mysql_db_name: ******
+mysql_db_user: ******
+mysql_db_password: ********
+mysql_db_host: ***.***.***.rds.amazonaws.com
+
